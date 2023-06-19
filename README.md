@@ -74,6 +74,8 @@ To use a live network it is better first try SEPOLIA network which is a proof of
 2) Connect Geth Sepolia Network with HTTP: Now we will run geth account with exposed api and endpoints in http for other clients
 
    > geth --datadir C:\\mynewnode\sepolia --sepolia --http --http.api eth,net,engine,admin
+
+Note:- if you want to use your own JWT security token for third party or external tools then you can provide its path like adding this as a parameter --authrpc.jwtsecret E:\mynewnode\myjwtsecret  (optional)
    
 3) Logs Troubleshooting:
 
@@ -97,36 +99,59 @@ Download Prysm and Configure with GETH
 
    >  https://github.com/eth-clients/merge-testnets/blob/main/sepolia/genesis.ssz 
    
-3) run geth using
-E:\>geth --datadir  E:\farhan\datadir --sepolia --http --http.api eth,net,engine,admin --authrpc.jwtsecret E:\farhan\datadir\geth\jwtsecret
-9) run prysm but make sure to provide address suggested-fee-recepient from existing accounts.
-E:\farhan\mynode\consensus\prysm>prysm.bat beacon-chain --execution-endpoint=http://localhost:8551 --sepolia --suggested-fee-recipient=0x9388A808006106251Ad9F752784f232ccB52D10F --jwt-secret=E:\farhan\datadir\geth\jwtsecret --genesis-state=genesis.ssz
 
-10) Use trouble shooting 
-C:\Users\farhan>curl http://localhost:3500/eth/v1/node/syncing
-curl http://localhost:3500/eth/v1alpha1/node/eth1/connections
+3) Run Consensus Node (prysm): To run this beacon chain node you must make sure to add the ethereum address suggested-fee-recepient from existing accounts you created or imported inside geth. Secondly you have to provide the JWT token for the communication which you can find inside your directory\geth\jwsecret . This token is an auto generated token by geth for any external communication. Additionally you have to provide the endpoint location with the port. The endpoint url which has auth false try to use that url. 
 
+   > prysm.bat beacon-chain --execution-endpoint=http://localhost:8551 --sepolia --suggested-fee-recipient=0x278e31b7c9214e1332c5f1d418693bf8af0bcd88 --jwt-secret=C:\\mynewnode\sepolia\geth\jwtsecret --genesis-state=genesis.ssz
+
+4) Syncrhonization process and trouble shooting : To become a full node you have to allow this process to be completed in few days without downloading entire blocks you will not find Sepolia new state. To test the synchronization status you can follow below commands
+   
+   >   curl http://localhost:3500/eth/v1/node/syncing
+   >   curl http://localhost:3500/eth/v1alpha1/node/eth1/connections
 
 
 Log review between geth and prysm
 ----------------------------------------
+You will find alot of logs on the command line console you can translate those logs  just to make sure your own the right direction.
+
 https://docs.prylabs.network/docs/troubleshooting/issues-errors
 https://geth.ethereum.org/docs/fundamentals/logs
 
 
-
-Now log Metamask to your GETH Client
+Configure Metamask with the GETH Client
 --------------------------------------
 1) Go in metamask settings
 2) Create network manually 
-3) Add http://localhost:8545 which is called ENDPOINT and give chainid sepolia 11155111
+3) Add http://localhost:8545 which is called ENDPOINT (you can find this endpoint on the geth console screen) and give chainid sepolia 11155111 with symbol as ETH
 4) Add the network 
-5) If connects congrats 
-6) Show how real metamask is working (Infura stuff with your geth)
+5) If it connects congrats 
+6) Now you dont need any infura (but make sure you have downloaded proper blocks)
 
-Now connect truffle 
+Configure Truffle with the Geth Client 
 -------------------------
-Connect truffle using geth node
-try deploying a contract and see error
+1) Create a truffle project
+2) Add the below configuration inside truffle-config
 
+    gethsepolia: {
+        host:"127.0.0.1",
+        port:8545,
+        network_id: '11155111'
+     }
 
+3) make sure your migration script from account represent the account you will use (to deploy your contract)
+
+4) Test on the geth supported sepolia network
+
+   >   truffle test --network gethsepolia
+   
+6) Open development console
+
+   >   truffle console --network gethsepolia
+   >    accounts
+   >    migrate
+   
+   Congratulations: Now you are a fully decentralized who doesnt need any third party to connect with the blockchain. But rememmber you will always need better security so make sure you always remain up to date with the following two main links.
+
+   https://docs.prylabs.network/docs/getting-started
+   https://geth.ethereum.org/docs/getting-started
+   
