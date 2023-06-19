@@ -87,18 +87,22 @@ To use a live network it is better first try SEPOLIA network which is a proof of
 
 If you are using sepolia account which shows zero as a balance then rememmber your geth is not sync. In order to sync, you have to run Prysm Consensus Node.
 
-Download Prysm
+Download Prysm and Configure with GETH
 ------------------------------------
-1) https://docs.prylabs.network/docs/install/install-with-script
-2) download using curl
-E:\farhan\mynode\consensus\prysm>curl https://raw.githubusercontent.com/prysmaticlabs/prysm/master/prysm.bat -o prysm.bat && reg add HKCU\Console /v VirtualTerminalLevel /t REG_DWORD /d 1
-3) download genesis file :  https://github.com/eth-clients/merge-testnets/blob/main/sepolia/genesis.ssz genisis file in the prysm directory 
-4) run geth using
+1) Download Prysm using CURL: Assuming you are running a windows otherwise check official prysm link: https://docs.prylabs.network/docs/install/install-with-script  make sure to create a prysm directory where you will download this. Below command will also add a registry key in the windows so you can have verbose loggings.
+
+   > curl https://raw.githubusercontent.com/prysmaticlabs/prysm/master/prysm.bat -o prysm.bat && reg add HKCU\Console /v VirtualTerminalLevel /t REG_DWORD /d 1
+
+2) Download Genesis File: To run Consensus client you have to download the genesis block file from the link in the prysm directory. 
+
+   >  https://github.com/eth-clients/merge-testnets/blob/main/sepolia/genesis.ssz 
+   
+3) run geth using
 E:\>geth --datadir  E:\farhan\datadir --sepolia --http --http.api eth,net,engine,admin --authrpc.jwtsecret E:\farhan\datadir\geth\jwtsecret
-5) run prysm but make sure to provide address suggested-fee-recepient from existing accounts.
+9) run prysm but make sure to provide address suggested-fee-recepient from existing accounts.
 E:\farhan\mynode\consensus\prysm>prysm.bat beacon-chain --execution-endpoint=http://localhost:8551 --sepolia --suggested-fee-recipient=0x9388A808006106251Ad9F752784f232ccB52D10F --jwt-secret=E:\farhan\datadir\geth\jwtsecret --genesis-state=genesis.ssz
 
-6) Use trouble shooting 
+10) Use trouble shooting 
 C:\Users\farhan>curl http://localhost:3500/eth/v1/node/syncing
 curl http://localhost:3500/eth/v1alpha1/node/eth1/connections
 
